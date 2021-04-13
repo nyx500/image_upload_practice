@@ -1,8 +1,22 @@
 {% extends "image/layout.html" %}
 
+{% block title %}
+    Upload Image (Form)
+{% endblock %}
+
 {% block body %}
 
-    {{ request.user }}<br> <a class="btn" href="{% url 'logout' %}">Log Out</a>
-    <h1>Hello</h1>
+    <h1>{{ message }}</h1>
+
+    <a class="btn" href="{% url 'logout' %}">Log Out</a>
+    <a class="btn" href="{% url 'display' %}">Display</a>
+
+    <h1>Upload an Image</h1>
+
+    <form action="{% url 'index' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload</button>
+    </form>
 
 {% endblock %}

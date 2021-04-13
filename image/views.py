@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
@@ -6,17 +6,44 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from .models import *
+from .forms import *
 
 # Create your views here.
 
-def index(request):
-    # Authenticated users view their inbox
-    if request.user.is_authenticated:
-        return render(request, "image/index.html")
+def display(request):
+    if request.method == "GET":
+        Images = Image.objects.all()
+        return render(request, 'image/display.html', {
+            'images': Images
+        })
 
-    # Everyone else is prompted to sign in
+def index(request):
+    if request.method == "POST":
+        if request.user.is_authenticated:
+
+                form = ImageForm(request.POST, request.FILES)
+
+                if form.is_valid():
+                    image = Image(
+                        user = request.user,
+                        image = form.cleaned_data['image']
+                    )
+                    image.save()
+                    return redirect('success')
+                else:
+                    return render(request, "image/index.html", {
+                        "message": "failure"
+                    })
+        else:
+            return HttpResponseRedirect(reverse("login"))
     else:
-        return HttpResponseRedirect(reverse("login"))
+        form = ImageForm()
+        return render(request, 'image/index.html', {
+            'form': form
+        })
+
+def success(request):
+    return HttpResponse('successfully uploaded')
 
 def login_view(request):
     if request.method == "POST":
