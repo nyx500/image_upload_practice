@@ -1,0 +1,8 @@
+{% extends "image/layout.html" %}
+
+{% block body %}
+
+    {{ request.user }}<br> <a class="btn" href="{% url 'logout' %}">Log Out</a>
+    <h1>Hello</h1>
+
+{% endblock %}
